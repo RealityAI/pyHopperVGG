@@ -31,6 +31,7 @@ Usage:
 from __future__ import print_function
 import os
 import sys
+import argparse
 
 # Get the current script's directory
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -76,9 +77,18 @@ def download_files():
 def main():
     print('\nTesting your install of VGGish\n')
 
-    # Paths to downloaded VGGish files.
-    checkpoint_path = os.path.join(script_dir,'./pre_trained_models/vggish/vggish_model.ckpt')
-    pca_params_path = os.path.join(script_dir,'./pre_trained_models/vggish/vggish_pca_params.npz')
+    # read paths from command line
+    parser = argparse.ArgumentParser(description='Please provide paths to the check point and pca params.')
+    parser.add_argument('-c', '--checkpoint', type=str, required=True, help='Path to checkpoint file')
+    parser.add_argument('-p', '--pca', type=str, required=True, help='Path to pca params file')
+    args = parser.parse_args()
+
+    checkpoint_path = args.checkpoint
+    pca_params_path = args.pca
+
+    # # Paths to downloaded VGGish files.
+    # checkpoint_path = os.path.join(script_dir,'./pre_trained_models/vggish/vggish_model.ckpt')
+    # pca_params_path = os.path.join(script_dir,'./pre_trained_models/vggish/vggish_pca_params.npz')
 
     # Relative tolerance of errors in mean and standard deviation of embeddings.
     rel_error = 0.1  # Up to 10%
