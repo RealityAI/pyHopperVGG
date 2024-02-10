@@ -46,7 +46,7 @@ setup(
             "pyHopperVGG = pyHopperVGG.vggish_smoke_test:main",
         ]
     },
-    # cmdclass={
-    #     'install': CustomInstallCommand,
-    # },
+    cmdclass={
+        'install': CustomInstallCommand,
+    },
 )

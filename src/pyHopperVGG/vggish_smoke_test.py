@@ -31,6 +31,8 @@ Usage:
 
 from __future__ import print_function
 
+import sys
+
 import numpy as np
 import resampy  # pylint: disable=import-error
 import tensorflow.compat.v1 as tf
@@ -39,77 +41,93 @@ import utils.vggish_input as vggish_input
 import utils.vggish_params as vggish_params
 import utils.vggish_postprocess as vggish_postprocess
 import utils.vggish_slim as vggish_slim
+import os
 
-print('\nTesting your install of VGGish\n')
+# Get the current script's directory
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Paths to downloaded VGGish files.
-checkpoint_path = 'pyHopperVGG/src/pre_trained_models/vggish/vggish_model.ckpt'
-pca_params_path = 'pyHopperVGG/src/pre_trained_models/vggish/vggish_pca_params.npz'
+# Construct the path to the 'src' directory (assuming 'hopper_controller.py' is inside 'pyHopper')
+src_dir = os.path.abspath(os.path.join(script_dir, ".."))
 
-# Relative tolerance of errors in mean and standard deviation of embeddings.
-rel_error = 0.1  # Up to 10%
+# Add the 'src' directory to sys.path
+sys.path.insert(0, src_dir)
 
-# Generate a 1 kHz sine wave at 16 kHz, the preferred sample rate of VGGish.
-num_secs = 3
-freq = 1000
-sr = 16000
-t = np.arange(0, num_secs, 1 / sr)
-x = np.sin(2 * np.pi * freq * t)
 
-# Check that we can resample a signal. Don't use the resampled signal to
-# produce an embedding where we check the results because we don't want
-# to depend on the resampler never changing too much.
-resampled_x = resampy.resample(x, sr, sr * 0.75)
-print('Resampling via resampy works!')
+def main():
+    print('\nTesting your install of VGGish\n')
 
-# Produce a batch of log mel spectrogram examples.
-input_batch = vggish_input.waveform_to_examples(x, sr)
-print('Log Mel Spectrogram example: ', input_batch[0])
-np.testing.assert_equal(
-    input_batch.shape,
-    [num_secs, vggish_params.NUM_FRAMES, vggish_params.NUM_BANDS])
+    # Paths to downloaded VGGish files.
+    checkpoint_path = os.path.join(script_dir,'./pre_trained_models/vggish/vggish_model.ckpt')
+    pca_params_path = os.path.join(script_dir,'./pre_trained_models/vggish/vggish_pca_params.npz')
 
-# Define VGGish, load the checkpoint, and run the batch through the model to
-# produce embeddings.
-with tf.Graph().as_default(), tf.Session() as sess:
-  vggish_slim.define_vggish_slim()
-  vggish_slim.load_vggish_slim_checkpoint(sess, checkpoint_path)
+    # Relative tolerance of errors in mean and standard deviation of embeddings.
+    rel_error = 0.1  # Up to 10%
 
-  features_tensor = sess.graph.get_tensor_by_name(
-      vggish_params.INPUT_TENSOR_NAME)
-  embedding_tensor = sess.graph.get_tensor_by_name(
-      vggish_params.OUTPUT_TENSOR_NAME)
-  [embedding_batch] = sess.run([embedding_tensor],
-                               feed_dict={features_tensor: input_batch})
-  print('VGGish embedding: ', embedding_batch[0])
-  print('embedding mean/stddev', np.mean(embedding_batch),
-        np.std(embedding_batch))
+    # Generate a 1 kHz sine wave at 16 kHz, the preferred sample rate of VGGish.
+    num_secs = 3
+    freq = 1000
+    sr = 16000
+    t = np.arange(0, num_secs, 1 / sr)
+    x = np.sin(2 * np.pi * freq * t)
 
-# Postprocess the results to produce whitened quantized embeddings.
-pproc = vggish_postprocess.Postprocessor(pca_params_path)
-postprocessed_batch = pproc.postprocess(embedding_batch)
-print('Postprocessed VGGish embedding: ', postprocessed_batch[0])
-print('postproc embedding mean/stddev', np.mean(postprocessed_batch),
-      np.std(postprocessed_batch))
+    # Check that we can resample a signal. Don't use the resampled signal to
+    # produce an embedding where we check the results because we don't want
+    # to depend on the resampler never changing too much.
+    resampled_x = resampy.resample(x, sr, sr * 0.75)
+    print('Resampling via resampy works!')
 
-# Expected mean/stddev were measured to 3 significant places on 07/25/23 with
-# NumPy 1.21.6 / TF 2.8.2 (dating to Apr-May 2022)
-# NumPy 1.24.3 / TF 2.13.0 (representative of July 2023)
-# with Python 3.10 on a Debian-like Linux system. Both configs produced
-# identical results.
+    # Produce a batch of log mel spectrogram examples.
+    input_batch = vggish_input.waveform_to_examples(x, sr)
+    print('Log Mel Spectrogram example: ', input_batch[0])
+    np.testing.assert_equal(
+        input_batch.shape,
+        [num_secs, vggish_params.NUM_FRAMES, vggish_params.NUM_BANDS])
 
-expected_embedding_mean = 0.000657
-expected_embedding_std = 0.343
-np.testing.assert_allclose(
-    [np.mean(embedding_batch), np.std(embedding_batch)],
-    [expected_embedding_mean, expected_embedding_std],
-    rtol=rel_error)
+    # Define VGGish, load the checkpoint, and run the batch through the model to
+    # produce embeddings.
+    with tf.Graph().as_default(), tf.Session() as sess:
+      vggish_slim.define_vggish_slim()
+      vggish_slim.load_vggish_slim_checkpoint(sess, checkpoint_path)
 
-expected_postprocessed_mean = 126.0
-expected_postprocessed_std = 89.3
-np.testing.assert_allclose(
-    [np.mean(postprocessed_batch), np.std(postprocessed_batch)],
-    [expected_postprocessed_mean, expected_postprocessed_std],
-    rtol=rel_error)
+      features_tensor = sess.graph.get_tensor_by_name(
+          vggish_params.INPUT_TENSOR_NAME)
+      embedding_tensor = sess.graph.get_tensor_by_name(
+          vggish_params.OUTPUT_TENSOR_NAME)
+      [embedding_batch] = sess.run([embedding_tensor],
+                                   feed_dict={features_tensor: input_batch})
+      print('VGGish embedding: ', embedding_batch[0])
+      print('embedding mean/stddev', np.mean(embedding_batch),
+            np.std(embedding_batch))
 
-print('\nLooks Good To Me!\n')
+    # Postprocess the results to produce whitened quantized embeddings.
+    pproc = vggish_postprocess.Postprocessor(pca_params_path)
+    postprocessed_batch = pproc.postprocess(embedding_batch)
+    print('Postprocessed VGGish embedding: ', postprocessed_batch[0])
+    print('postproc embedding mean/stddev', np.mean(postprocessed_batch),
+          np.std(postprocessed_batch))
+
+    # Expected mean/stddev were measured to 3 significant places on 07/25/23 with
+    # NumPy 1.21.6 / TF 2.8.2 (dating to Apr-May 2022)
+    # NumPy 1.24.3 / TF 2.13.0 (representative of July 2023)
+    # with Python 3.10 on a Debian-like Linux system. Both configs produced
+    # identical results.
+
+    expected_embedding_mean = 0.000657
+    expected_embedding_std = 0.343
+    np.testing.assert_allclose(
+        [np.mean(embedding_batch), np.std(embedding_batch)],
+        [expected_embedding_mean, expected_embedding_std],
+        rtol=rel_error)
+
+    expected_postprocessed_mean = 126.0
+    expected_postprocessed_std = 89.3
+    np.testing.assert_allclose(
+        [np.mean(postprocessed_batch), np.std(postprocessed_batch)],
+        [expected_postprocessed_mean, expected_postprocessed_std],
+        rtol=rel_error)
+
+    print('\nLooks Good To Me!\n')
+
+
+if __name__ == '__main__':
+    main()
