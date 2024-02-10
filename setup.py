@@ -6,27 +6,61 @@ from setuptools.command.install import install
 # Define a custom installation class that extends setuptools' install command
 class CustomInstallCommand(install):
     def run(self):
-        install.run(self)
         # Run your custom code here
-        download_files()
         install.run(self)
+        download_files()
 
 # Function to download the necessary files
+# def download_files():
+#
+#
+#     # Get the directory of setup.py
+#     setup_dir = os.path.dirname(os.path.abspath(__file__))
+#
+#     # Create directory if it does not exist
+#     model_dir = os.path.join(setup_dir, "pre_trained_models", "vggish")
+#     os.makedirs(model_dir, exist_ok=True)
+#
+#     print(f"Downloading VGGish files...{model_dir}")
+#     # Download vggish_model.ckpt to pre_trained_models/vggish/
+#     os.system(
+#         f"curl -o {os.path.join(model_dir, 'vggish_model.ckpt')} https://storage.googleapis.com/audioset/vggish_model.ckpt")
+#     # Download vggish_pca_params.npz to pre_trained_models/vggish/
+#     os.system(
+#         f"curl -o {os.path.join(model_dir, 'vggish_pca_params.npz')} https://storage.googleapis.com/audioset/vggish_pca_params.npz")
+
 def download_files():
-    # Get the directory of setup.py
-    setup_dir = os.path.dirname(os.path.abspath(__file__))
+    import os
+    import requests
 
-    # Create directory if it does not exist
-    model_dir = os.path.join(setup_dir, "pre_trained_models", "vggish")
-    os.makedirs(model_dir, exist_ok=True)
+    # Get the directory where the current Python script is located
+    script_dir = os.path.dirname(os.path.abspath(__file__))
 
-    print(f"Downloading VGGish files...{model_dir}")
-    # Download vggish_model.ckpt to pre_trained_models/vggish/
-    os.system(
-        f"curl -o {os.path.join(model_dir, 'vggish_model.ckpt')} https://storage.googleapis.com/audioset/vggish_model.ckpt")
-    # Download vggish_pca_params.npz to pre_trained_models/vggish/
-    os.system(
-        f"curl -o {os.path.join(model_dir, 'vggish_pca_params.npz')} https://storage.googleapis.com/audioset/vggish_pca_params.npz")
+    # Define the URLs for the files to download
+    url_vggish_model = 'https://storage.googleapis.com/audioset/vggish_model.ckpt'
+    url_vggish_pca_params = 'https://storage.googleapis.com/audioset/vggish_pca_params.npz'
+
+    # Define the local file paths relative to the script directory
+    local_path_vggish_model = os.path.join(script_dir, 'pre_trained_models', 'vggish', 'vggish_model.ckpt')
+    local_path_vggish_pca_params = os.path.join(script_dir, 'pre_trained_models', 'vggish', 'vggish_pca_params.npz')
+
+    # Download vggish_model.ckpt
+    response_model = requests.get(url_vggish_model)
+    if response_model.status_code == 200:
+        with open(local_path_vggish_model, 'wb') as f:
+            f.write(response_model.content)
+        print('vggish_model.ckpt downloaded successfully!')
+    else:
+        print('Failed to download vggish_model.ckpt:', response_model.status_code)
+
+    # Download vggish_pca_params.npz
+    response_params = requests.get(url_vggish_pca_params)
+    if response_params.status_code == 200:
+        with open(local_path_vggish_pca_params, 'wb') as f:
+            f.write(response_params.content)
+        print('vggish_pca_params.npz downloaded successfully!')
+    else:
+        print('Failed to download vggish_pca_params.npz:', response_params.status_code)
 
 
 # Setup function with custom install command
