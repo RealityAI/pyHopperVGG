@@ -1,6 +1,6 @@
+import os
 from setuptools import setup, find_packages
 from setuptools.command.install import install
-import os
 
 
 # Define a custom installation class that extends setuptools' install command
@@ -13,15 +13,19 @@ class CustomInstallCommand(install):
 
 # Function to download the necessary files
 def download_files():
+    # Get the directory of setup.py
+    setup_dir = os.path.dirname(os.path.abspath(__file__))
+
     # Create directory if it does not exist
-    os.makedirs("pre_trained_models/vggish", exist_ok=True)
+    model_dir = os.path.join(setup_dir, "pre_trained_models", "vggish")
+    os.makedirs(model_dir, exist_ok=True)
 
     # Download vggish_model.ckpt to pre_trained_models/vggish/
     os.system(
-        "curl -o pre_trained_models/vggish/vggish_model.ckpt https://storage.googleapis.com/audioset/vggish_model.ckpt")
+        f"curl -o {os.path.join(model_dir, 'vggish_model.ckpt')} https://storage.googleapis.com/audioset/vggish_model.ckpt")
     # Download vggish_pca_params.npz to pre_trained_models/vggish/
     os.system(
-        "curl -o pre_trained_models/vggish/vggish_pca_params.npz https://storage.googleapis.com/audioset/vggish_pca_params.npz")
+        f"curl -o {os.path.join(model_dir, 'vggish_pca_params.npz')} https://storage.googleapis.com/audioset/vggish_pca_params.npz")
 
 
 # Setup function with custom install command
