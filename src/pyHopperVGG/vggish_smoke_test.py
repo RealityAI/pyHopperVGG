@@ -28,6 +28,7 @@ Usage:
 - Run:
   $ python vggish_smoke_test.py
 """
+from __future__ import print_function
 import os
 import sys
 
@@ -41,7 +42,7 @@ src_dir = os.path.abspath(os.path.join(script_dir, ".."))
 sys.path.insert(0, src_dir)
 
 
-from __future__ import print_function
+
 
 import sys
 
