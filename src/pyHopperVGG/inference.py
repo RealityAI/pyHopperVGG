@@ -71,7 +71,7 @@ from utils.vggish_input import waveform_to_examples
 import utils.vggish_params as vggish_params
 import utils.vggish_postprocess as vggish_postprocess
 import utils.vggish_slim as vggish_slim
-from utils.utils import get_windows_from_paths, load_data_from_hd5
+# from utils.utils import get_windows_from_paths, load_data_from_hd5
 
 
 flags = tf.app.flags
@@ -128,13 +128,13 @@ def feature_extraction_vgg(HData, sample_rate):
         postprocessed_batch = pproc.postprocess(embedding_batch)
         return postprocessed_batch
 
-def main(_):
-    windows, target = get_windows_from_paths("data/audio_data/convertedData.hd5", "data/audio_data/indexCSV.csv")
-    HData, HLabels, HGroups = load_data_from_hd5("data/audio_data/convertedData.hd5", "data/audio_data/indexCSV.csv")
-    sample_rate = pd.read_csv("data/audio_data/indexCSV.csv")
-    sample_rate = sample_rate['sampleRate'][0]
-
-    X = feature_extraction_vgg(HData, sample_rate)
+# def main(_):
+#     windows, target = get_windows_from_paths("data/audio_data/convertedData.hd5", "data/audio_data/indexCSV.csv")
+#     HData, HLabels, HGroups = load_data_from_hd5("data/audio_data/convertedData.hd5", "data/audio_data/indexCSV.csv")
+#     sample_rate = pd.read_csv("data/audio_data/indexCSV.csv")
+#     sample_rate = sample_rate['sampleRate'][0]
+#
+#     X = feature_extraction_vgg(HData, sample_rate)
 
 
 
