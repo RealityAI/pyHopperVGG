@@ -21,7 +21,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "pyHopperVGG = pyHopper.inference:main",
+            "pyHopperVGG = pyHopperVGG.vggish_smoke_test:main",
         ]
     }
 )
