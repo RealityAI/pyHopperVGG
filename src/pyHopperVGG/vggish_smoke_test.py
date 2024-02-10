@@ -28,6 +28,18 @@ Usage:
 - Run:
   $ python vggish_smoke_test.py
 """
+import os
+import sys
+
+# Get the current script's directory
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Construct the path to the 'src' directory (assuming 'hopper_controller.py' is inside 'pyHopper')
+src_dir = os.path.abspath(os.path.join(script_dir, ".."))
+
+# Add the 'src' directory to sys.path
+sys.path.insert(0, src_dir)
+
 
 from __future__ import print_function
 
@@ -43,14 +55,7 @@ import utils.vggish_postprocess as vggish_postprocess
 import utils.vggish_slim as vggish_slim
 import os
 
-# Get the current script's directory
-script_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Construct the path to the 'src' directory (assuming 'hopper_controller.py' is inside 'pyHopper')
-src_dir = os.path.abspath(os.path.join(script_dir, ".."))
-
-# Add the 'src' directory to sys.path
-sys.path.insert(0, src_dir)
 
 
 def main():
