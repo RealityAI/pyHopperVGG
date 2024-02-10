@@ -9,7 +9,7 @@ class CustomInstallCommand(install):
         install.run(self)
         # Run your custom code here
         download_files()
-
+        install.run(self)
 
 # Function to download the necessary files
 def download_files():

@@ -57,7 +57,21 @@ import utils.vggish_slim as vggish_slim
 import os
 
 
+def download_files():
+    # Get the directory of setup.py
+    setup_dir = os.path.dirname(os.path.abspath(__file__))
 
+    # Create directory if it does not exist
+    model_dir = os.path.join(setup_dir, "pre_trained_models", "vggish")
+    os.makedirs(model_dir, exist_ok=True)
+
+    print(f"Downloading VGGish files...{model_dir}")
+    # Download vggish_model.ckpt to pre_trained_models/vggish/
+    os.system(
+        f"curl -o {os.path.join(model_dir, 'vggish_model.ckpt')} https://storage.googleapis.com/audioset/vggish_model.ckpt")
+    # Download vggish_pca_params.npz to pre_trained_models/vggish/
+    os.system(
+        f"curl -o {os.path.join(model_dir, 'vggish_pca_params.npz')} https://storage.googleapis.com/audioset/vggish_pca_params.npz")
 
 def main():
     print('\nTesting your install of VGGish\n')
