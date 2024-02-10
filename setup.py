@@ -40,11 +40,14 @@ def download_files():
     url_vggish_model = 'https://storage.googleapis.com/audioset/vggish_model.ckpt'
     url_vggish_pca_params = 'https://storage.googleapis.com/audioset/vggish_pca_params.npz'
 
-    # Define the local file paths relative to the script directory
-    local_path_vggish_model = os.path.join(script_dir, 'pre_trained_models', 'vggish', 'vggish_model.ckpt')
-    local_path_vggish_pca_params = os.path.join(script_dir, 'pre_trained_models', 'vggish', 'vggish_pca_params.npz')
+    # Define the local directory paths relative to the script directory
+    local_dir_vggish = os.path.join(script_dir, 'pre_trained_models', 'vggish')
+
+    # Ensure the directory exists, create it if necessary
+    os.makedirs(local_dir_vggish, exist_ok=True)
 
     # Download vggish_model.ckpt
+    local_path_vggish_model = os.path.join(local_dir_vggish, 'vggish_model.ckpt')
     response_model = requests.get(url_vggish_model)
     if response_model.status_code == 200:
         with open(local_path_vggish_model, 'wb') as f:
@@ -54,6 +57,7 @@ def download_files():
         print('Failed to download vggish_model.ckpt:', response_model.status_code)
 
     # Download vggish_pca_params.npz
+    local_path_vggish_pca_params = os.path.join(local_dir_vggish, 'vggish_pca_params.npz')
     response_params = requests.get(url_vggish_pca_params)
     if response_params.status_code == 200:
         with open(local_path_vggish_pca_params, 'wb') as f:
