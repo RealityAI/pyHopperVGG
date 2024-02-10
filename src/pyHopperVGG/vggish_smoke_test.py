@@ -43,7 +43,11 @@ src_dir = os.path.abspath(os.path.join(script_dir, ".."))
 sys.path.insert(0, src_dir)
 
 
+# Get the path of the package directory (assuming main_script.py is in the same directory as my_package).
+package_dir = os.path.dirname(os.path.abspath(__file__))
 
+# Add the package directory to sys.path.
+sys.path.insert(0, package_dir)
 
 import sys
 
