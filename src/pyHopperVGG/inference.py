@@ -52,7 +52,11 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 # Construct the path to the 'src' directory (assuming 'hopper_controller.py' is inside 'pyHopper')
 src_dir = os.path.abspath(os.path.join(script_dir, ".."))
 
-print(src_dir)
+# Get the path of the package directory (assuming main_script.py is in the same directory as my_package).
+package_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Add the package directory to sys.path.
+sys.path.insert(0, package_dir)
 
 # Add the 'src' directory to sys.path
 sys.path.insert(0, src_dir)
