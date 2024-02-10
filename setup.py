@@ -20,6 +20,7 @@ def download_files():
     model_dir = os.path.join(setup_dir, "pre_trained_models", "vggish")
     os.makedirs(model_dir, exist_ok=True)
 
+    print(f"Downloading VGGish files...{model_dir}")
     # Download vggish_model.ckpt to pre_trained_models/vggish/
     os.system(
         f"curl -o {os.path.join(model_dir, 'vggish_model.ckpt')} https://storage.googleapis.com/audioset/vggish_model.ckpt")
