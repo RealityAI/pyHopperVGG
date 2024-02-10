@@ -32,9 +32,6 @@ setup(
     author_email="francisco.mendes.pv@renesas.com",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
-    package_data={'pyHopperVGG.pre_trained_models': ['*']
-                  },
-    include_package_data=True,
     install_requires=[
         'numpy==1.24.3',
         'resampy',
